@@ -13,6 +13,7 @@
     <!-- Grid raíz: 3 filas -> marcador / tablero / controles.
          "Auto,*,Auto" = la 1a y la 3a miden lo que necesiten,
          la de en medio se come todo el espacio sobrante. -->
+    
     <Grid RowDefinitions="Auto,*,Auto" Margin="24">
 
         <!-- ===== FILA 0: marcador ===== -->

@@ -17,12 +17,28 @@ public partial class MainWindow : Window
 
     // Columna donde está parado el selector (arranca al centro).
     private int _columnaActual = 3;
+    
+    // Valores posibles de una casilla. Constantes, no números mágicos.
+    private const int Vacio    = 0;
+    private const int Rojo     = 1;
+    private const int Amarillo = 2;
 
-    // Colores en un solo lugar.
+    // EL TABLERO DE VERDAD. int[,] arranca lleno de 0 = Vacio, gratis.
+    private readonly int[,] _tablero = new int[Filas, Columnas];
+
+    // De quién es el turno.
+    private int _turno = Rojo;
+
+    // COLORES DE FICHAS
     private static readonly IBrush ColorVacio    = new SolidColorBrush(Color.Parse("#12122E"));
-    private static readonly IBrush ColorSelector = Brushes.Snow;
+    private static readonly IBrush ColorSelector = Brushes.White;
+    
     private static readonly IBrush BordeVacio    = new SolidColorBrush(Color.Parse("#2A2A55"));
-
+    private static readonly IBrush ColorRojo     = new SolidColorBrush(Color.Parse("#E74C3C"));
+    private static readonly IBrush BordeRojo     = new SolidColorBrush(Color.Parse("#96281B"));
+    private static readonly IBrush ColorAmarillo = new SolidColorBrush(Color.Parse("#F1C40F"));
+    private static readonly IBrush BordeAmarillo = new SolidColorBrush(Color.Parse("#B7950B"));
+    
     public MainWindow()
     {
         InitializeComponent();
@@ -53,18 +69,65 @@ public partial class MainWindow : Window
         }
     }
 
+    private void ActualizarTurno()
+    {
+        if (_turno == Rojo)
+        {
+            TurnoText.Text = "TURNO: ROJO";
+            TurnoText.Foreground = ColorRojo;
+        }
+        else
+        {
+            TurnoText.Text = "TURNO: AMARILLO";
+            TurnoText.Foreground = ColorAmarillo;
+        }
+    }
+
+    private void ActualizarBotones()
+    {
+        BtnIzq.IsEnabled = _columnaActual > 0;
+        BtnDer.IsEnabled = _columnaActual < Columnas - 1;
+
+        // SOLTAR se apaga si la columna ya está llena.
+        BtnSoltar.IsEnabled = BuscarFilaLibre(_columnaActual) != -1;
+    }
+    
+    
     // Repinta todo: vacío por defecto, blanco en la columna seleccionada.
+    
     private void RedibujarTablero()
     {
         for (int f = 0; f < Filas; f++)
         {
             for (int c = 0; c < Columnas; c++)
             {
+                int valor = _tablero[f, c];
                 bool seleccionada = (c == _columnaActual);
-                _celdas[f, c].Fill = seleccionada ? ColorSelector : ColorVacio;
-                _celdas[f, c].Stroke = seleccionada ? ColorSelector : BordeVacio;
+                if (valor == Rojo)
+                {
+                    _celdas[f, c].Fill   = ColorRojo;
+                    _celdas[f, c].Stroke = BordeRojo;
+                }
+                else if (valor == Amarillo)
+                {
+                    _celdas[f, c].Fill   = ColorAmarillo;
+                    _celdas[f, c].Stroke = BordeAmarillo;
+                }
+                else if (seleccionada)
+                {
+                    _celdas[f, c].Fill   = ColorSelector;
+                    _celdas[f, c].Stroke = ColorSelector;
+                }
+                else
+                {
+                    _celdas[f, c].Fill   = ColorVacio;
+                    _celdas[f, c].Stroke = BordeVacio;
+                }
             }
         }
+
+        ActualizarTurno();
+        ActualizarBotones();
     }
 
     private void MoverSelector(int delta)
@@ -90,13 +153,42 @@ public partial class MainWindow : Window
 
     private void BtnSoltar_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        // Paso 2: aquí va la lógica de soltar la ficha.
+        // 1. ¿Dónde cae?
+        int fila = BuscarFilaLibre(_columnaActual);
+
+        // 2. Guard clause: columna llena, no hago nada.
+        if (fila == -1) return;
+
+        // 3. Modifico el ESTADO (no la pantalla).
+        _tablero[fila, _columnaActual] = _turno;
+
+        // 4. Cambio el turno.
+        _turno = (_turno == Rojo) ? Amarillo : Rojo;
+
+        // 5. Ahora sí, que la pantalla se ponga al día.
+        RedibujarTablero();
     }
+    
+    /// Devuelve la fila donde caería una ficha en esa columna.
+    /// Devuelve -1 si la columna ya está llena.
+    private int BuscarFilaLibre(int columna)
+    {
+        for (int f = Filas - 1; f >= 0; f--)
+        {
+            if (_tablero[f, columna] == Vacio)
+                return f;
+        }
+        return -1;
+    }
+    
+    
 
     private void Window_KeyDown(object? sender, KeyEventArgs e)
     {
         if (e.Key == Key.Left)  MoverSelector(-1);
         if (e.Key == Key.Right) MoverSelector(+1);
-        if (e.Key == Key.Space || e.Key == Key.Enter) BtnSoltar_Click(sender, new());
+        if (e.Key == Key.Space || e.Key == Key.Down) BtnSoltar_Click(sender, new());
     }
+    
+    
 }
