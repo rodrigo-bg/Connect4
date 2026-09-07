@@ -2,7 +2,7 @@
 using System;
 
 namespace Connect4;
-
+//hola
 class Program
 {
     // Initialization code. Don't use any Avalonia, third-party APIs or any
