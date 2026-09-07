@@ -1,9 +1,79 @@
-<Window xmlns="https://github.com/avaloniaui"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-        x:Class="Connect4.MainWindow"
-        Title="Connect4">
-    Welcome to Avalonia!
-</Window>
+<Window 
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+    x:Class="Connect4.MainWindow"
+    Title="Connect4"
+    Width="540" Height="640"
+    Background="#F7F5F2"
+    KeyDown="Window_KeyDown">
+    
+    <!-- Grid raíz: 3 filas -> marcador / tablero / controles.
+         "Auto,*,Auto" = la 1a y la 3a miden lo que necesiten,
+         la de en medio se come todo el espacio sobrante. -->
+    <Grid RowDefinitions="Auto,*,Auto" Margin="24">
+
+        <!-- ===== FILA 0: marcador ===== -->
+        <Grid Grid.Row="0" ColumnDefinitions="*" Margin="0,0,0,16">
+            <TextBlock x:Name="TurnoText" Grid.Column="0"
+                       Text="TURNO: ROJO"
+                       FontFamily="Consolas" FontSize="16" FontWeight="Bold"
+                       Foreground="#C0392B" 
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            
+        </Grid>
+
+        <!-- ===== FILA 1: tablero ===== -->
+        <!-- Border = el marco negro. UniformGrid adentro = la rejilla de hoyos. -->
+        <Border Grid.Row="1"
+                Background="#141414"
+                BorderBrush="#4A4A4A" BorderThickness="3"
+                CornerRadius="14" Padding="14"
+                HorizontalAlignment="Center" VerticalAlignment="Center">
+            <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
+        </Border>
+
+        <!-- ===== FILA 2: controles ===== -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal"
+                    HorizontalAlignment="Center" Spacing="28" Margin="0,22,0,0">
+
+            <StackPanel>
+                <Button x:Name="BtnIzq" Click="BtnIzq_Click" Focusable="False"
+                        Width="64" Height="52" Background="#C0392B"
+                        CornerRadius="8" BorderBrush="#7B1E14" BorderThickness="2"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center">
+                    <TextBlock Text="◀" FontSize="22" Foreground="White"/>
+                </Button>
+                <TextBlock Text="IZQ" HorizontalAlignment="Center" Margin="0,7,0,0"
+                           FontFamily="Consolas" FontSize="11" Foreground="#666"/>
+            </StackPanel>
+
+            <StackPanel>
+                <Button x:Name="BtnSoltar" Click="BtnSoltar_Click" Focusable="False"
+                        Width="72" Height="72" Background="#E8A33D"
+                        CornerRadius="36" BorderBrush="#A8701F" BorderThickness="2"/>
+                <TextBlock Text="SOLTAR" HorizontalAlignment="Center" Margin="0,7,0,0"
+                           FontFamily="Consolas" FontSize="11" Foreground="#666"/>
+            </StackPanel>
+
+            <StackPanel>
+                <Button x:Name="BtnDer" Click="BtnDer_Click" Focusable="False"
+                        Width="64" Height="52" Background="#C0392B"
+                        CornerRadius="8" BorderBrush="#7B1E14" BorderThickness="2"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center">
+                    <TextBlock Text="▶" FontSize="22" Foreground="White"/>
+                </Button>
+                <TextBlock Text="DER" HorizontalAlignment="Center" Margin="0,7,0,0"
+                           FontFamily="Consolas" FontSize="11" Foreground="#666"/>
+            </StackPanel>
+
+        </StackPanel>
+    </Grid>
+</Window>    
+
+
+
