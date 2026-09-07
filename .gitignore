@@ -3,3 +3,13 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+## .NET / C#
+[Bb]in/
+[Oo]bj/
+*.user
+*.suo
+
+## JetBrains Rider / macOS
+.idea/
+.DS_Store
+Thumbs.db
