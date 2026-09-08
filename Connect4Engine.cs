@@ -1,3 +1,5 @@
+using Avalonia.Input;
+
 namespace Connect4;
 
 public enum Ficha {Vacio = 0, Rojo = 1, Amarillo = 2}
@@ -63,8 +65,48 @@ public class Connect4Engine
 
     public bool CompruebaVictoria(int fila, int columna)
     {
+        Ficha ficha = Tablero[fila, columna];
+        (int df, int dc)[] direcciones = { (0, 1), (1, 0), (1, 1), (-1, 1) };
+
+        foreach (var (df, dc) in direcciones)
+        {
+            int total = 1;
+            // cuenta hacia adelante
+            total += CuentaEnDireccion(fila, columna, df, dc, ficha);
+            
+            //cuenta hacia atras invirtiendo el vector
+            total += CuentaEnDireccion(fila, columna, -df, -dc, ficha);
+            
+            if (total >= 4) return true;
+        }
         return false;
     }
-    
+
+    public int CuentaEnDireccion(int fila, int columna, int df, int dc, Ficha objetivo)
+    {
+        int cuenta = 0;
+        int f = fila + df;
+        int c = columna + df;
+
+        while (f >= 0 && f < Filas && c >= 0 && c < Columnas && Tablero[f, c] == objetivo)
+        {
+            cuenta++;
+            // Cuenta en las direcciones que le mandamos como parametro
+            f = fila + df;
+            c = columna + df;
+        }
+        return cuenta;
+    }
+
+    public void Reincia()
+    {
+        for (int f = 0; f < Filas; f++)
+            for (int c =  0; c < Columnas; c++)
+                Tablero[f, c] = Ficha.Vacio;
+
+        TurnoActual = Ficha.Rojo;
+        JuegoTerminado = false;
+        Ganador = Ficha.Vacio;
+    }
     
 }
