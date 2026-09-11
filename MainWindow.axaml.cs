@@ -16,11 +16,11 @@ public partial class MainWindow : Window
 
     private readonly Connect4Engine _engine = new();
 
-    private static readonly IBrush ColorVacio    = new SolidColorBrush(Color.Parse("#12122E"));
+    private static readonly IBrush ColorVacio = new SolidColorBrush(Color.Parse("#12122E"));
     private static readonly IBrush ColorSelector = Brushes.White;
-    private static readonly IBrush BordeVacio    = new SolidColorBrush(Color.Parse("#2A2A55"));
-    private static readonly IBrush ColorRojo     = new SolidColorBrush(Color.Parse("#E74C3C"));
-    private static readonly IBrush BordeRojo     = new SolidColorBrush(Color.Parse("#96281B"));
+    private static readonly IBrush BordeVacio = new SolidColorBrush(Color.Parse("#2A2A55"));
+    private static readonly IBrush ColorRojo = new SolidColorBrush(Color.Parse("#E74C3C"));
+    private static readonly IBrush BordeRojo = new SolidColorBrush(Color.Parse("#96281B"));
     private static readonly IBrush ColorAmarillo = new SolidColorBrush(Color.Parse("#F1C40F"));
     private static readonly IBrush BordeAmarillo = new SolidColorBrush(Color.Parse("#B7950B"));
 
@@ -34,24 +34,24 @@ public partial class MainWindow : Window
     private void ConstruirTablero()
     {
         for (int f = 0; f < Filas; f++)
-            for (int c = 0; c < Columnas; c++)
+        for (int c = 0; c < Columnas; c++)
+        {
+            var celda = new Ellipse
             {
-                var celda = new Ellipse
-                {
-                    Width = 48, Height = 48, Margin = new Thickness(4),
-                    Fill = ColorVacio, Stroke = BordeVacio, StrokeThickness = 2
-                };
-                _celdas[f, c] = celda;
-                TableroGrid.Children.Add(celda);
-            }
+                Width = 48, Height = 48, Margin = new Thickness(4),
+                Fill = ColorVacio, Stroke = BordeVacio, StrokeThickness = 2
+            };
+            _celdas[f, c] = celda;
+            TableroGrid.Children.Add(celda);
+        }
     }
 
     private void ActualizarTurno()
     {
         if (_engine.JuegoTerminado)
         {
-            TableroBorder.IsVisible = false;   // se borra el tablero
-            PantallaGanador.IsVisible = true;  // aparece GANASTE + REINICIAR
+            TableroBorder.IsVisible = false; // se borra el tablero
+            PantallaGanador.IsVisible = true; // aparece GANASTE + REINICIAR
             TurnoText.Text = "";
 
             GanadorText.Foreground = _engine.Ganador == Ficha.Rojo ? ColorRojo : ColorAmarillo;
@@ -77,8 +77,6 @@ public partial class MainWindow : Window
     {
         bool sePuedeJugar = !_engine.JuegoTerminado;
         BtnSoltar.IsEnabled = sePuedeJugar && _engine.BuscaFilaLibre(_columnaActual) != -1;
-        BtnIzq.IsEnabled = sePuedeJugar;
-        BtnDer.IsEnabled = sePuedeJugar;
     }
 
     private void RedibujarTablero()
@@ -126,12 +124,41 @@ public partial class MainWindow : Window
         _columnaActual = nueva;
         RedibujarTablero();
     }
+    
+    // Cuánto se desplaza el grupo palito+perilla desde el centro (en px)
+    private const double PalIzquierda = -24;
+    private const double PalCentro = 0;
+    private const double PalDerecha = 24;
 
-    private void BtnIzq_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        => MoverSelector(-1);
+    private void Window_KeyDown(object? sender, KeyEventArgs e)
+    {
+        if (_engine.JuegoTerminado) return;
 
-    private void BtnDer_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
-        => MoverSelector(+1);
+        if (e.Key == Key.Left || e.Key == Key.A)
+        {
+            MoverSelector(-1);
+            Canvas.SetLeft(Palanquita, PalIzquierda);
+        }
+        else if (e.Key == Key.Right || e.Key == Key.D)
+        {
+            MoverSelector(+1);
+            Canvas.SetLeft(Palanquita, PalDerecha);
+        }
+        else if (e.Key == Key.Space || e.Key == Key.Down || e.Key == Key.S)
+        {
+            BtnSoltar.BorderThickness =  new Thickness(15);
+            BtnSoltar_Click(sender, new());
+        }
+    }
+
+    private void Window_KeyUp(object? sender, KeyEventArgs e)
+    {
+        // Al soltar la flecha, la palanquita vuelve al centro (quieta)
+        if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.A  || e.Key == Key.S || e.Key == Key.D)
+            Canvas.SetLeft(Palanquita, PalCentro);
+        if(e.Key == Key.Space || e.Key == Key.Down || e.Key == Key.S)
+            BtnSoltar.BorderThickness = new Thickness(10);
+    }
 
     private void BtnSoltar_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
@@ -146,10 +173,4 @@ public partial class MainWindow : Window
         RedibujarTablero();
     }
 
-    private void Window_KeyDown(object? sender, KeyEventArgs e)
-    {
-        if (e.Key == Key.Left)  MoverSelector(-1);
-        if (e.Key == Key.Right) MoverSelector(+1);
-        if (e.Key == Key.Space || e.Key == Key.Down) BtnSoltar_Click(sender, new());
-    }
 }

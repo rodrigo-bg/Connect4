@@ -7,8 +7,9 @@
     x:Class="Connect4.MainWindow"
     Title="Connect4"
     Width="540" Height="640"
-    Background="#F7F5F2"
-    KeyDown="Window_KeyDown">
+    Background="black"
+    KeyDown="Window_KeyDown"
+    KeyUp="Window_KeyUp">
 
     <Grid RowDefinitions="Auto,*,Auto" Margin="24">
 
@@ -16,17 +17,17 @@
         <Grid Grid.Row="0" ColumnDefinitions="*" Margin="0,0,0,16">
             <TextBlock x:Name="TurnoText" Grid.Column="0"
                        Text="TURNO: ROJO"
-                       FontFamily="Consolas" FontSize="16" FontWeight="Bold"
+                       FontFamily="Consolas" FontSize="25" FontWeight="Bold"
                        Foreground="#C0392B" 
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
 
-        <!-- ===== FILA 1: tablero O pantalla de victoria (uno tapa al otro) ===== -->
+        <!-- ===== FILA 1: tablero O pantalla de victoria ===== -->
         <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 
             <Border x:Name="TableroBorder"
-                    Background="#141414"
-                    BorderBrush="#4A4A4A" BorderThickness="3"
+                    Background="Blue"
+                    BorderBrush="MidnightBlue" BorderThickness="3"
                     CornerRadius="14" Padding="14">
                 <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
             </Border>
@@ -38,47 +39,62 @@
                            HorizontalAlignment="Center"/>
                 <Button x:Name="BtnReiniciar" Content="REINICIAR" Click="BtnReiniciar_Click" Focusable="False"
                         HorizontalAlignment="Center" Padding="22,10" CornerRadius="8"
-                        Background="#333333" Foreground="White" FontFamily="Consolas" FontSize="14"/>
+                        Background="gray" Foreground="White" FontFamily="Consolas" FontSize="14"/>
             </StackPanel>
 
         </Grid>
 
-        <!-- ===== FILA 2: controles ===== -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal"
-                    HorizontalAlignment="Center" Spacing="28" Margin="0,22,0,0">
+        <!-- ===== FILA 2: fondo gris oscuro, mismo ancho que el tablero, con los controles adentro ===== -->
+        <Border Grid.Row="2"
+                Background="#2B2B2B"
+                CornerRadius="14"
+                Padding="16"
+                Margin="0,16,0,0"
+                HorizontalAlignment="Center"
+                Width="{Binding ElementName=TableroBorder, Path=Bounds.Width}">
 
-            <StackPanel>
-                <Button x:Name="BtnIzq" Click="BtnIzq_Click" Focusable="False"
-                        Width="64" Height="52" Background="#C0392B"
-                        CornerRadius="8" BorderBrush="#7B1E14" BorderThickness="2"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center">
-                    <TextBlock Text="◀" FontSize="22" Foreground="White"/>
-                </Button>
-                <TextBlock Text="IZQ" HorizontalAlignment="Center" Margin="0,7,0,0"
-                           FontFamily="Consolas" FontSize="11" Foreground="#666"/>
-            </StackPanel>
+            <StackPanel Orientation="Horizontal"
+                        HorizontalAlignment="Center" Spacing="40">
 
-            <StackPanel>
+                <!-- Palanquita estilo arcade: base fija + palito/perilla que se mueve -->
+                <Grid Width="140" Height="52">
+
+                    <Canvas Width="200" Height="200">
+
+                        <!-- Base: círculo gris oscuro, se queda fija -->
+                        <Ellipse Width="110" Height="110"
+                                 Canvas.Left="45" Canvas.Top="40"
+                                 Fill="#4A4A4A"
+                                 Stroke="#2E2E2E" StrokeThickness="3" />
+
+                        <!-- Grupo que se mueve: palito + perilla roja -->
+                        <Canvas x:Name="Palanquita" Canvas.Left="0" Canvas.Top="0">
+
+                            <!-- Palito: gris más claro, conecta la base con el círculo rojo -->
+                            <Rectangle Width="22" Height="90"
+                                       Canvas.Left="89" Canvas.Top="20"
+                                       RadiusX="10" RadiusY="10"
+                                       Fill="LightSlateGray"
+                                       Stroke="DimGray" StrokeThickness="1.5"
+                                       />
+
+                            <!-- Perilla: círculo rojo arriba -->
+                            <Ellipse Width="70" Height="70"
+                                     Canvas.Left="65" Canvas.Top="0"
+                                     Fill="Red"
+                                     Stroke="DarkRed" StrokeThickness="3" />
+                        </Canvas>
+                    </Canvas>
+                </Grid>
+                
+                
                 <Button x:Name="BtnSoltar" Click="BtnSoltar_Click" Focusable="False"
-                        Width="72" Height="72" Background="#E8A33D"
-                        CornerRadius="36" BorderBrush="#A8701F" BorderThickness="2"/>
-                <TextBlock Text="SOLTAR" HorizontalAlignment="Center" Margin="0,7,0,0"
-                           FontFamily="Consolas" FontSize="11" Foreground="#666"/>
-            </StackPanel>
-
-            <StackPanel>
-                <Button x:Name="BtnDer" Click="BtnDer_Click" Focusable="False"
-                        Width="64" Height="52" Background="#C0392B"
-                        CornerRadius="8" BorderBrush="#7B1E14" BorderThickness="2"
-                        HorizontalContentAlignment="Center"
-                        VerticalContentAlignment="Center">
-                    <TextBlock Text="▶" FontSize="22" Foreground="White"/>
+                        Width="90" Height="90" Background="Red"
+                        CornerRadius="40" BorderBrush="DarkRed" BorderThickness="10"
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                 </Button>
-                <TextBlock Text="DER" HorizontalAlignment="Center" Margin="0,7,0,0"
-                           FontFamily="Consolas" FontSize="11" Foreground="#666"/>
-            </StackPanel>
 
-        </StackPanel>
+            </StackPanel>
+        </Border>
     </Grid>
 </Window>
