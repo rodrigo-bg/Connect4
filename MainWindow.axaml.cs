@@ -85,9 +85,6 @@ public partial class MainWindow : Window
 
     private void ActualizarBotones()
     {
-        BtnIzq.IsEnabled = _columnaActual > 0;
-        BtnDer.IsEnabled = _columnaActual < Columnas - 1;
-
         // SOLTAR se apaga si la columna ya está llena.
         BtnSoltar.IsEnabled = BuscarFilaLibre(_columnaActual) != -1;
     }
