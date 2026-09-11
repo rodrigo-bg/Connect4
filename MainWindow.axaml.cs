@@ -134,17 +134,20 @@ public partial class MainWindow : Window
     {
         if (_engine.JuegoTerminado) return;
 
-        if (e.Key == Key.Left || e.Key == Key.A)
+        if ((e.Key == Key.Left && _engine.TurnoActual == Ficha.Amarillo) || 
+             (e.Key == Key.A &&  _engine.TurnoActual == Ficha.Rojo ))
         {
             MoverSelector(-1);
             Canvas.SetLeft(Palanquita, PalIzquierda);
         }
-        else if (e.Key == Key.Right || e.Key == Key.D)
+        else if ((e.Key == Key.Right && _engine.TurnoActual == Ficha.Amarillo)||
+                 (e.Key == Key.D && _engine.TurnoActual == Ficha.Rojo))
         {
             MoverSelector(+1);
             Canvas.SetLeft(Palanquita, PalDerecha);
         }
-        else if (e.Key == Key.Space || e.Key == Key.Down || e.Key == Key.S)
+        else if ((e.Key == Key.Down && _engine.TurnoActual == Ficha.Amarillo) || 
+                 (e.Key == Key.S && _engine.TurnoActual == Ficha.Rojo))
         {
             BtnSoltar.BorderThickness =  new Thickness(15);
             BtnSoltar_Click(sender, new());
