@@ -83,17 +83,15 @@ public class Connect4Engine
     }
 
     public int CuentaEnDireccion(int fila, int columna, int df, int dc, Ficha objetivo)
-    {
+    { 
         int cuenta = 0;
         int f = fila + df;
-        int c = columna + df;
-
+        int c = columna + dc;
         while (f >= 0 && f < Filas && c >= 0 && c < Columnas && Tablero[f, c] == objetivo)
         {
             cuenta++;
-            // Cuenta en las direcciones que le mandamos como parametro
-            f = fila + df;
-            c = columna + df;
+            f += df;
+            c += dc;
         }
         return cuenta;
     }

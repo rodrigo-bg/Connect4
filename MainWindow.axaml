@@ -9,11 +9,7 @@
     Width="540" Height="640"
     Background="#F7F5F2"
     KeyDown="Window_KeyDown">
-    
-    <!-- Grid raíz: 3 filas -> marcador / tablero / controles.
-         "Auto,*,Auto" = la 1a y la 3a miden lo que necesiten,
-         la de en medio se come todo el espacio sobrante. -->
-    
+
     <Grid RowDefinitions="Auto,*,Auto" Margin="24">
 
         <!-- ===== FILA 0: marcador ===== -->
@@ -23,18 +19,29 @@
                        FontFamily="Consolas" FontSize="16" FontWeight="Bold"
                        Foreground="#C0392B" 
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            
         </Grid>
 
-        <!-- ===== FILA 1: tablero ===== -->
-        <!-- Border = el marco negro. UniformGrid adentro = la rejilla de hoyos. -->
-        <Border Grid.Row="1"
-                Background="#141414"
-                BorderBrush="#4A4A4A" BorderThickness="3"
-                CornerRadius="14" Padding="14"
-                HorizontalAlignment="Center" VerticalAlignment="Center">
-            <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
-        </Border>
+        <!-- ===== FILA 1: tablero O pantalla de victoria (uno tapa al otro) ===== -->
+        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+            <Border x:Name="TableroBorder"
+                    Background="#141414"
+                    BorderBrush="#4A4A4A" BorderThickness="3"
+                    CornerRadius="14" Padding="14">
+                <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
+            </Border>
+
+            <StackPanel x:Name="PantallaGanador" IsVisible="False"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="28">
+                <TextBlock x:Name="GanadorText" Text="GANASTE"
+                           FontFamily="Consolas" FontSize="40" FontWeight="Bold"
+                           HorizontalAlignment="Center"/>
+                <Button x:Name="BtnReiniciar" Content="REINICIAR" Click="BtnReiniciar_Click" Focusable="False"
+                        HorizontalAlignment="Center" Padding="22,10" CornerRadius="8"
+                        Background="#333333" Foreground="White" FontFamily="Consolas" FontSize="14"/>
+            </StackPanel>
+
+        </Grid>
 
         <!-- ===== FILA 2: controles ===== -->
         <StackPanel Grid.Row="2" Orientation="Horizontal"
@@ -74,7 +81,4 @@
 
         </StackPanel>
     </Grid>
-</Window>    
-
-
-
+</Window>
