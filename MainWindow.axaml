@@ -29,7 +29,10 @@
                     Background="Blue"
                     BorderBrush="MidnightBlue" BorderThickness="3"
                     CornerRadius="14" Padding="14">
-                <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
+                <Grid>
+                    <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
+                    <Canvas x:Name="CapaAnimacion" IsHitTestVisible="False" ClipToBounds="True"/>
+                </Grid>
             </Border>
 
             <Border x:Name="PantallaGanador" IsVisible="False"

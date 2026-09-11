@@ -1,3 +1,7 @@
+using System;
+using System.Threading.Tasks;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -13,6 +17,7 @@ public partial class MainWindow : Window
 
     private readonly Ellipse[,] _celdas = new Ellipse[Filas, Columnas];
     private int _columnaActual = 3;
+    private bool _animando;
 
     private readonly Connect4Engine _engine = new();
 
@@ -163,10 +168,52 @@ public partial class MainWindow : Window
             BtnSoltar.BorderThickness = new Thickness(10);
     }
 
-    private void BtnSoltar_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private async void BtnSoltar_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        _engine.SueltaFicha(_columnaActual);
+        if (_animando) return;
+
+        Ficha fichaQueCae = _engine.TurnoActual;
+        int fila = _engine.SueltaFicha(_columnaActual);
+        if (fila == -1) return;
+
+        _animando = true;
+        await AnimarCaida(_columnaActual, fila, fichaQueCae);
+        _animando = false;
+
         RedibujarTablero();
+    }
+
+    // Anima una ficha cayendo desde arriba del tablero hasta la fila donde quedó
+    private async Task AnimarCaida(int columna, int filaDestino, Ficha ficha)
+    {
+        const double celda = 56; // 48 de la ficha + 4 de margen a cada lado
+        const double margen = 4;
+
+        var pieza = new Ellipse
+        {
+            Width = 48, Height = 48,
+            Fill = ficha == Ficha.Rojo ? ColorRojo : ColorAmarillo,
+            Stroke = ficha == Ficha.Rojo ? BordeRojo : BordeAmarillo,
+            StrokeThickness = 2,
+            Transitions = new Transitions
+            {
+                new DoubleTransition
+                {
+                    Property = Canvas.TopProperty,
+                    Duration = TimeSpan.FromMilliseconds(50 + filaDestino * 60),
+                    Easing = new CubicEaseIn()
+                }
+            }
+        };
+
+        Canvas.SetLeft(pieza, columna * celda + margen);
+        Canvas.SetTop(pieza, -celda);
+        CapaAnimacion.Children.Add(pieza);
+        await Task.Delay(16); // deja pintar la posición inicial antes de animar
+        Canvas.SetTop(pieza, filaDestino * celda + margen);
+        await Task.Delay(TimeSpan.FromMilliseconds(50 + filaDestino * 60));
+
+        CapaAnimacion.Children.Remove(pieza);
     }
 
     private void BtnReiniciar_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
