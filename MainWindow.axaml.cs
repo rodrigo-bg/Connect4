@@ -17,7 +17,7 @@ public partial class MainWindow : Window
     private readonly Connect4Engine _engine = new();
 
     private static readonly IBrush ColorVacio = new SolidColorBrush(Color.Parse("#12122E"));
-    private static readonly IBrush ColorSelector = Brushes.White;
+    private static readonly IBrush ColorSelector = Brushes.DarkBlue;
     private static readonly IBrush BordeVacio = new SolidColorBrush(Color.Parse("#2A2A55"));
     private static readonly IBrush ColorRojo = new SolidColorBrush(Color.Parse("#E74C3C"));
     private static readonly IBrush BordeRojo = new SolidColorBrush(Color.Parse("#96281B"));
