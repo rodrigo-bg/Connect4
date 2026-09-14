@@ -40,7 +40,7 @@ public class Connect4Engine
         } 
         else if (TableroEstaLleno())
         {
-            JuegoTerminado = false;
+            JuegoTerminado = true;
             Ganador = Ficha.Vacio;
         }
         else

@@ -58,8 +58,18 @@ public partial class MainWindow : Window
             TableroBorder.IsVisible = false; // se borra el tablero
             PantallaGanador.IsVisible = true; // aparece GANASTE + REINICIAR
             TurnoText.Text = "";
-
-            GanadorText.Foreground = _engine.Ganador == Ficha.Rojo ? ColorRojo : ColorAmarillo;
+            if (_engine.Ganador == Ficha.Rojo)
+            {
+                GanadorText.Foreground = ColorRojo;
+            }
+            else if (_engine.Ganador == Ficha.Amarillo){
+                GanadorText.Foreground = ColorAmarillo;
+            }
+            else
+            {
+                GanadorText.Text = "EMPATE";
+                GanadorText.Foreground = Brushes.White;
+            }
             return;
         }
 
