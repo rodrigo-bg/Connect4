@@ -1,4 +1,5 @@
 using Avalonia.Input;
+using System.Collections.Generic;
 
 namespace Connect4;
 
@@ -63,6 +64,8 @@ public class Connect4Engine
         return true;
     }
 
+    public List<(int Fila, int Columna)> LineaGanadora { get; private set; } = new();
+
     public bool CompruebaVictoria(int fila, int columna)
     {
         Ficha ficha = Tablero[fila, columna];
@@ -70,30 +73,31 @@ public class Connect4Engine
 
         foreach (var (df, dc) in direcciones)
         {
-            int total = 1;
-            // cuenta hacia adelante
-            total += CuentaEnDireccion(fila, columna, df, dc, ficha);
-            
-            //cuenta hacia atras invirtiendo el vector
-            total += CuentaEnDireccion(fila, columna, -df, -dc, ficha);
-            
-            if (total >= 4) return true;
+            var linea = new List<(int, int)> { (fila, columna) };
+            linea.AddRange(CeldasEnDireccion(fila, columna, df, dc, ficha));
+            linea.AddRange(CeldasEnDireccion(fila, columna, -df, -dc, ficha));
+
+            if (linea.Count >= 4)
+            {
+                LineaGanadora = linea;
+                return true;
+            }
         }
         return false;
     }
 
-    public int CuentaEnDireccion(int fila, int columna, int df, int dc, Ficha objetivo)
-    { 
-        int cuenta = 0;
+    private List<(int Fila, int Columna)> CeldasEnDireccion(int fila, int columna, int df, int dc, Ficha objetivo)
+    {
+        var celdas = new List<(int, int)>();
         int f = fila + df;
         int c = columna + dc;
         while (f >= 0 && f < Filas && c >= 0 && c < Columnas && Tablero[f, c] == objetivo)
         {
-            cuenta++;
+            celdas.Add((f, c));
             f += df;
             c += dc;
         }
-        return cuenta;
+        return celdas;
     }
 
     public void Reincia()

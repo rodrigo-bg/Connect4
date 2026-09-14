@@ -84,7 +84,7 @@ public partial class MainWindow : Window
         BtnSoltar.IsEnabled = sePuedeJugar && _engine.BuscaFilaLibre(_columnaActual) != -1;
     }
 
-    private void RedibujarTablero()
+    private void PintarCeldas()
     {
         for (int f = 0; f < Filas; f++)
         {
@@ -92,6 +92,8 @@ public partial class MainWindow : Window
             {
                 Ficha valor = _engine.Tablero[f, c];
                 bool seleccionada = c == _columnaActual && !_engine.JuegoTerminado;
+
+                _celdas[f, c].StrokeThickness = 2; // deja el contorno normal por defecto
 
                 if (valor == Ficha.Rojo)
                 {
@@ -115,9 +117,22 @@ public partial class MainWindow : Window
                 }
             }
         }
+    }
 
+    private void RedibujarTablero()
+    {
+        PintarCeldas();
         ActualizarTurno();
         ActualizarBotones();
+    }
+
+    private void ResaltarLineaGanadora()
+    {
+        foreach (var (f, c) in _engine.LineaGanadora)
+        {
+            _celdas[f, c].Stroke = Brushes.White;
+            _celdas[f, c].StrokeThickness = 4;
+        }
     }
 
     private void MoverSelector(int delta)
@@ -178,8 +193,15 @@ public partial class MainWindow : Window
 
         _animando = true;
         await AnimarCaida(_columnaActual, fila, fichaQueCae);
-        _animando = false;
 
+        if (_engine.JuegoTerminado && _engine.Ganador != Ficha.Vacio)
+        {
+            PintarCeldas();
+            ResaltarLineaGanadora();
+            await Task.Delay(TimeSpan.FromSeconds(3));
+        }
+
+        _animando = false;
         RedibujarTablero();
     }
 
