@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using Avalonia.Animation;
-using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Media;
@@ -17,7 +15,6 @@ public partial class MainWindow : Window
 
     private readonly Ellipse[,] _celdas = new Ellipse[Filas, Columnas];
     private int _columnaActual = 3;
-    private bool _animando;
 
     private readonly Connect4Engine _engine = new();
 
@@ -55,14 +52,16 @@ public partial class MainWindow : Window
     {
         if (_engine.JuegoTerminado)
         {
-            TableroBorder.IsVisible = false; // se borra el tablero
-            PantallaGanador.IsVisible = true; // aparece GANASTE + REINICIAR
+            TableroBorde.IsVisible = false;
+            PantallaGanador.IsVisible = true;
             TurnoText.Text = "";
             if (_engine.Ganador == Ficha.Rojo)
             {
+                GanadorText.Text = "¡GANASTE\nROJO!";
                 GanadorText.Foreground = ColorRojo;
             }
             else if (_engine.Ganador == Ficha.Amarillo){
+                GanadorText.Text = "¡GANASTE\nAMARILLO!";
                 GanadorText.Foreground = ColorAmarillo;
             }
             else
@@ -73,7 +72,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        TableroBorder.IsVisible = true;
+        TableroBorde.IsVisible = true;
         PantallaGanador.IsVisible = false;
 
         if (_engine.TurnoActual == Ficha.Rojo)
@@ -87,12 +86,7 @@ public partial class MainWindow : Window
             TurnoText.Foreground = ColorAmarillo;
         }
     }
-
-    private void ActualizarBotones()
-    {
-        bool sePuedeJugar = !_engine.JuegoTerminado;
-        BtnSoltar.IsEnabled = sePuedeJugar && _engine.BuscaFilaLibre(_columnaActual) != -1;
-    }
+    
 
     private void PintarCeldas()
     {
@@ -101,9 +95,13 @@ public partial class MainWindow : Window
             for (int c = 0; c < Columnas; c++)
             {
                 Ficha valor = _engine.Tablero[f, c];
-                bool seleccionada = c == _columnaActual && !_engine.JuegoTerminado;
+                bool seleccionada;
+                if (c == _columnaActual && !_engine.JuegoTerminado)
+                    seleccionada = true;
+                else
+                    seleccionada = false;
 
-                _celdas[f, c].StrokeThickness = 2; // deja el contorno normal por defecto
+                _celdas[f, c].StrokeThickness = 2;
 
                 if (valor == Ficha.Rojo)
                 {
@@ -133,7 +131,6 @@ public partial class MainWindow : Window
     {
         PintarCeldas();
         ActualizarTurno();
-        ActualizarBotones();
     }
 
     private void ResaltarLineaGanadora()
@@ -145,20 +142,17 @@ public partial class MainWindow : Window
         }
     }
 
-    private void MoverSelector(int delta)
+    private void MoverSelector(int movimiento)
     {
         if (_engine.JuegoTerminado) return;
-        int nueva = _columnaActual + delta;
-        if (nueva >= Columnas) nueva = nueva % Columnas;
-        else if (nueva < 0) nueva = Columnas - 1;
+        int nueva = _columnaActual + movimiento;
+        if (nueva >= Columnas) 
+            nueva = nueva % Columnas;
+        else if (nueva < 0) 
+            nueva = Columnas - 1;
         _columnaActual = nueva;
         RedibujarTablero();
     }
-    
-    // Cuánto se desplaza el grupo palito+perilla desde el centro (en px)
-    private const double PalIzquierda = -24;
-    private const double PalCentro = 0;
-    private const double PalDerecha = 24;
 
     private void Window_KeyDown(object? sender, KeyEventArgs e)
     {
@@ -168,13 +162,13 @@ public partial class MainWindow : Window
              (e.Key == Key.A &&  _engine.TurnoActual == Ficha.Rojo ))
         {
             MoverSelector(-1);
-            Canvas.SetLeft(Palanquita, PalIzquierda);
+            Canvas.SetLeft(Palanquita, -24);
         }
         else if ((e.Key == Key.Right && _engine.TurnoActual == Ficha.Amarillo)||
                  (e.Key == Key.D && _engine.TurnoActual == Ficha.Rojo))
         {
             MoverSelector(+1);
-            Canvas.SetLeft(Palanquita, PalDerecha);
+            Canvas.SetLeft(Palanquita, 24);
         }
         else if ((e.Key == Key.Down && _engine.TurnoActual == Ficha.Amarillo) || 
                  (e.Key == Key.S && _engine.TurnoActual == Ficha.Rojo))
@@ -186,23 +180,16 @@ public partial class MainWindow : Window
 
     private void Window_KeyUp(object? sender, KeyEventArgs e)
     {
-        // Al soltar la flecha, la palanquita vuelve al centro (quieta)
-        if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.A  || e.Key == Key.S || e.Key == Key.D)
-            Canvas.SetLeft(Palanquita, PalCentro);
+        if (e.Key == Key.Left || e.Key == Key.Right || e.Key == Key.A  || e.Key == Key.D)
+            Canvas.SetLeft(Palanquita, 0);
         if(e.Key == Key.Space || e.Key == Key.Down || e.Key == Key.S)
-            BtnSoltar.BorderThickness = new Thickness(10);
+            BtnSoltar.BorderThickness = new Thickness(12);
     }
 
     private async void BtnSoltar_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
     {
-        if (_animando) return;
-
-        Ficha fichaQueCae = _engine.TurnoActual;
         int fila = _engine.SueltaFicha(_columnaActual);
         if (fila == -1) return;
-
-        _animando = true;
-        await AnimarCaida(_columnaActual, fila, fichaQueCae);
 
         if (_engine.JuegoTerminado && _engine.Ganador != Ficha.Vacio)
         {
@@ -211,41 +198,7 @@ public partial class MainWindow : Window
             await Task.Delay(TimeSpan.FromSeconds(3));
         }
 
-        _animando = false;
         RedibujarTablero();
-    }
-
-    // Anima una ficha cayendo desde arriba del tablero hasta la fila donde quedó
-    private async Task AnimarCaida(int columna, int filaDestino, Ficha ficha)
-    {
-        const double celda = 56; // 48 de la ficha + 4 de margen a cada lado
-        const double margen = 4;
-
-        var pieza = new Ellipse
-        {
-            Width = 48, Height = 48,
-            Fill = ficha == Ficha.Rojo ? ColorRojo : ColorAmarillo,
-            Stroke = ficha == Ficha.Rojo ? BordeRojo : BordeAmarillo,
-            StrokeThickness = 2,
-            Transitions = new Transitions
-            {
-                new DoubleTransition
-                {
-                    Property = Canvas.TopProperty,
-                    Duration = TimeSpan.FromMilliseconds(50 + filaDestino * 60),
-                    Easing = new CubicEaseIn()
-                }
-            }
-        };
-
-        Canvas.SetLeft(pieza, columna * celda + margen);
-        Canvas.SetTop(pieza, -celda);
-        CapaAnimacion.Children.Add(pieza);
-        await Task.Delay(16); // deja pintar la posición inicial antes de animar
-        Canvas.SetTop(pieza, filaDestino * celda + margen);
-        await Task.Delay(TimeSpan.FromMilliseconds(50 + filaDestino * 60));
-
-        CapaAnimacion.Children.Remove(pieza);
     }
 
     private void BtnReiniciar_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

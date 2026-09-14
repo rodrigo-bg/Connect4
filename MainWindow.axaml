@@ -12,54 +12,49 @@
     KeyUp="Window_KeyUp">
 
     <Grid RowDefinitions="Auto,*,Auto" Margin="24">
-
-        <!-- ===== FILA 0: marcador ===== -->
+        
         <Grid Grid.Row="0" ColumnDefinitions="*" Margin="0,0,0,16">
             <TextBlock x:Name="TurnoText" Grid.Column="0"
                        Text="TURNO: ROJO"
-                       FontFamily="Consolas" FontSize="25" FontWeight="Bold"
-                       Foreground="#C0392B" 
+                       FontFamily="arial" FontSize="25" FontWeight="Bold"
+                       Foreground="Red" 
                        HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
 
         <!-- ===== FILA 1: tablero O pantalla de victoria ===== -->
         <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center">
 
-            <Border x:Name="TableroBorder"
+            <Border x:Name="TableroBorde"
                     Background="Blue"
                     BorderBrush="MidnightBlue" BorderThickness="3"
                     CornerRadius="14" Padding="14">
-                <Grid>
-                    <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
-                    <Canvas x:Name="CapaAnimacion" IsHitTestVisible="False" ClipToBounds="True"/>
-                </Grid>
+                <UniformGrid x:Name="TableroGrid" Rows="6" Columns="7"/>
             </Border>
 
             <Border x:Name="PantallaGanador" IsVisible="False"
-                    Background="#141414"
-                    BorderBrush="#4A4A4A" BorderThickness="3"
+                    Background="black"
+                    BorderBrush="gray" BorderThickness="3"
                     CornerRadius="14" Padding="40"
                     HorizontalAlignment="Center" VerticalAlignment="Center">
                 <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="28">
                     <TextBlock x:Name="GanadorText" Text="GANASTE"
-                               FontFamily="Consolas" FontSize="40" FontWeight="Bold"
-                               HorizontalAlignment="Center"/>
+                               FontFamily="Arial" FontSize="40" FontWeight="Bold"
+                               HorizontalAlignment="Center" TextAlignment="Center"/>
                     <Button x:Name="BtnReiniciar" Content="REINICIAR" Click="BtnReiniciar_Click" Focusable="False"
                             HorizontalAlignment="Center" Padding="22,10" CornerRadius="8"
-                            Background="gray" Foreground="White" FontFamily="Consolas" FontSize="14"/>
+                            Background="gray" Foreground="White" FontFamily="arial" FontSize="14"/>
                 </StackPanel>
             </Border>
 
         </Grid>
-
-        <!-- ===== FILA 2: fondo gris oscuro, mismo ancho que el tablero, con los controles adentro ===== -->
+        
         <Border Grid.Row="2"
                 Background="#2B2B2B"
                 CornerRadius="14"
                 Padding="16"
                 Margin="0,16,0,0"
                 HorizontalAlignment="Center"
-                Width="{Binding ElementName=TableroBorder, Path=Bounds.Width}">
+                Width="{Binding ElementName=TableroBorde, Path=Bounds.Width}">
 
             <StackPanel Orientation="Horizontal"
                         HorizontalAlignment="Center" Spacing="40">
@@ -68,25 +63,21 @@
                 <Grid Width="140" Height="52">
 
                     <Canvas Width="200" Height="200">
-
-                        <!-- Base: círculo gris oscuro, se queda fija -->
+                        
                         <Ellipse Width="110" Height="110"
                                  Canvas.Left="45" Canvas.Top="40"
                                  Fill="#4A4A4A"
                                  Stroke="#2E2E2E" StrokeThickness="3" />
 
-                        <!-- Grupo que se mueve: palito + perilla roja -->
                         <Canvas x:Name="Palanquita" Canvas.Left="0" Canvas.Top="0">
-
-                            <!-- Palito: gris más claro, conecta la base con el círculo rojo -->
+                            
                             <Rectangle Width="22" Height="90"
                                        Canvas.Left="89" Canvas.Top="20"
                                        RadiusX="10" RadiusY="10"
                                        Fill="LightSlateGray"
                                        Stroke="DimGray" StrokeThickness="1.5"
-                                       />
-
-                            <!-- Perilla: círculo rojo arriba -->
+                            />
+                            
                             <Ellipse Width="70" Height="70"
                                      Canvas.Left="65" Canvas.Top="0"
                                      Fill="Red"

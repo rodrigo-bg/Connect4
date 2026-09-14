@@ -14,8 +14,7 @@ public class Connect4Engine
     public Ficha TurnoActual { get; private set; } = Ficha.Rojo;
     public bool JuegoTerminado { get; private set; } = false;
     public Ficha Ganador { get; private set; } = Ficha.Vacio;
-
-// Busca la primera fila libre de abajo hacia arriba
+    
     public int BuscaFilaLibre(int columna) {
         if (columna < 0 || columna > Columnas) return -1;
         for (int f = Filas - 1; f >= 0; f--)
